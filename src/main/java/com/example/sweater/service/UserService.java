@@ -42,7 +42,7 @@ public class UserService implements UserDetailsService {
     private void sendMessage(User user) {
         if (!StringUtils.isEmpty(user.getEmail())) {
             String message = String.format("Hello, %s! \n" +
-                    "Welcome to MySweater. Please, visit next link: <a href=\"http://localhost:8080/activate/%s\">Here</a>",
+                    "Welcome to MySweater. Please, visit next link: http://localhost:8080/activate/%s",
                     user.getUsername(),
                     user.getActivationCode());
             mailSender.send(user.getEmail(), "Activation code", message);
@@ -106,8 +106,9 @@ public class UserService implements UserDetailsService {
 
         if (!StringUtils.isEmpty(password)) {
             user.setPassword(passwordEncoder.encode(password));
-        }
 
+        }
+        user.setPassword2(passwordEncoder.encode(user.getPassword()));
         userRepo.save(user);
         if (isChanged)
             sendMessage(user);

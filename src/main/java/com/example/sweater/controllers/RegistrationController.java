@@ -36,7 +36,8 @@ public class RegistrationController {
 
     //зарегестрироваться
     @PostMapping("/registration")
-    public String addUser(@Valid User user,
+    public String addUser(@RequestParam String password2,
+                          @Valid User user,
                           BindingResult bindingResult,
                           Model model,
                           @RequestParam("g-recaptcha-response") String captchaResponce) {
@@ -51,7 +52,7 @@ public class RegistrationController {
             model.mergeAttributes(errors);
             return "registration";
         }
-        if (user.getPassword() != null && !user.getPassword2().equals(user.getPassword())) {
+        if (user.getPassword() != null && !password2.equals(user.getPassword())) {
             if (!response.isSuccess()) {
                 model.addAttribute("captchaError", "Fill captcha!");
             }

@@ -20,10 +20,12 @@ public class User implements UserDetails {
     @NotBlank(message = "Пароль не может быть пустым!")
     private String password;
     @Transient
-    @NotBlank(message = "Пароль не может быть пустым!")
+
     private String password2;
     private boolean active;
 
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Message> messages;
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "userId"))
     @Enumerated(EnumType.STRING)
@@ -44,6 +46,14 @@ public class User implements UserDetails {
         this.password = password;
         this.active = activated;
         this.roles = roles;
+    }
+
+    public Set<Message> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(Set<Message> messages) {
+        this.messages = messages;
     }
 
     public String getPassword2() {

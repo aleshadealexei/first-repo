@@ -2,6 +2,7 @@ package com.example.sweater.controllers;
 
 import com.example.sweater.domain.Role;
 import com.example.sweater.domain.User;
+import com.example.sweater.repos.UserRepo;
 import com.example.sweater.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,7 +19,8 @@ import java.util.Map;
 public class UserConroller {
     @Autowired
     private UserService userService;
-
+    @Autowired
+    private UserRepo userRepo;
     //Список юзеров
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -50,20 +52,34 @@ public class UserConroller {
         return "redirect:/user";
     }
 
-    @GetMapping("profile")
-    public String getProfile(Model model, @AuthenticationPrincipal User user) {
+    @GetMapping("profile/{userCode}")
+    public String getProfile(Model model, @AuthenticationPrincipal User user, @PathVariable String userCode) {
+        if (!userCode.equals(user.getId().toString())) {
+            return "redirect:/user/profile/" + user.getId().toString();
+        }
         model.addAttribute("user", user);
 
         return "profile";
     }
 
-    @PostMapping("profile")
+    @PostMapping("profile/{user}")
     public String setProfile(Model model,
                              @AuthenticationPrincipal User user,
                              @RequestParam String password,
                              @RequestParam String email) {
 
+        User us = userRepo.findByUsername(user.getUsername());
+        System.out.println(us.getId());
+
+
+        System.out.println(user.getUsername());
+        System.out.println(user.getPassword());
+        System.out.println(user.getEmail());
+        System.out.println("New pass: " + password);
+        System.out.println("New email" + email);
+
+
         userService.updateProfile(user, password, email);
-        return "redirect:/user/profile";
+        return "redirect:/user/profile/{user}";
     }
 }
