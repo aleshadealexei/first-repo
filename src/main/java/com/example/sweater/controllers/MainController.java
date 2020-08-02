@@ -5,6 +5,7 @@ import com.example.sweater.domain.Role;
 import com.example.sweater.domain.User;
 import com.example.sweater.repos.MessageRepo;
 
+import com.example.sweater.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -15,9 +16,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -85,23 +88,13 @@ public class MainController {
             model.mergeAttributes(errorsMap);
             return main(model, user);
         } else {
-            if (file != null && !file.getOriginalFilename().isEmpty()) {
-                File uploadDir = new File(uploadPath);
-                if (!uploadDir.exists()) {
-                    uploadDir.mkdir();
-                }
-                String uuidfile = UUID.randomUUID().toString();
-                String resultFileName = uuidfile +  "." + file.getOriginalFilename();
-
-                file.transferTo(new File(uploadPath + "/" + resultFileName));
-
-                message.setFilename(resultFileName);
-            }
+            FileService.uploadAndSaveFile(message, file);
             messageRepo.save(message);
         }
         System.out.println(message.getText());
         return "redirect:/main";
     }
+
 
 
 
@@ -115,5 +108,6 @@ public class MainController {
             return "redirect:/main";
         }
     }
+
 
 }

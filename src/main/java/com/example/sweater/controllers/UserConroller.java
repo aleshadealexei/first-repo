@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -20,6 +21,8 @@ import java.util.Map;
 @Controller
 @RequestMapping("/user")
 public class UserConroller {
+
+
     @Autowired
     private UserService userService;
     @Autowired
@@ -88,46 +91,7 @@ public class UserConroller {
 
     }
 
-    @GetMapping("messages/{user}")
-    public String getMessageList(@AuthenticationPrincipal User currentUser,
-                                 @PathVariable User user,
-                                 @RequestParam(required = false) Message message,
-                                 Model model) {
-        if (message != null) {
-            model.addAttribute(message);
-        }
-        model.addAttribute("currUser", user.getId().equals(currentUser.getId()));
-        model.addAttribute("messages", user.getMessages());
-        return "usermessages";
-    }
 
-    @PostMapping("messages/{user}")
-    public String editMessageFromMessageList(@AuthenticationPrincipal User currentUser,
-                                             @PathVariable Long user,
-                                             @RequestParam("id") Message oldMessage,
-                                             @RequestParam("text") String newText,
-                                             @RequestParam(value = "tag", required = false) String newTag,
-                                             @RequestParam("button") String valueKnopka,
-                                             Model model) {
-
-        if (valueKnopka.equals("delete")) {
-            System.out.println("Будет удаление");
-            messageRepo.delete(oldMessage);
-            return "redirect:/user/messages/{user}";
-        }
-        if (oldMessage.getAuthor().getId().equals(currentUser.getId())) {
-            if (!StringUtils.isEmpty(newText)) {
-                oldMessage.setText(newText);
-            }
-            if (!StringUtils.isEmpty(newTag)) {
-                oldMessage.setTag(newTag);
-            }
-
-            messageRepo.save(oldMessage);
-        }
-
-        return "redirect:/user/messages/{user}";
-    }
 
 
 }

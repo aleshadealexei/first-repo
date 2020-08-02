@@ -12,10 +12,10 @@
     </div>
 
 
-    <div class="container ml-5" style="width: 30%" th:if="${currUser}">
+    <div class="container ml-5" style="width: 30%" th:if="${currUser}" enctype="multipart/form-data">
         <h1>Изменить сообщение: </h1>
         <br>
-        <form method="post" th:action="@{'/user/messages/' + ${#authentication.principal.id}}">
+        <form method="post" th:action="@{'/user/messages/' + ${#authentication.principal.id}}" enctype="multipart/form-data">
             <input th:value="${message}? ${message.getId()} : null" name="id" hidden/>
             <div><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"></div>
             <div class="form-row">
@@ -29,7 +29,9 @@
                 <div class="col-md-3 mb-3">
                     <label >Тэги</label>
                     <input th:value="${message}? ${message.getTag()} : null" type="text" name="tag" placeholder="Введите тэг" class="form-control "/><br>
-
+                </div>
+                <div class="col-md-3 mb-3">
+                    <input type="file" name="file" placeholder="Выбери свой файл" />
                 </div>
             </div>
             <div class="form-row my-2 my-sm-3">
