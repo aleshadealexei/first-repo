@@ -58,6 +58,9 @@
                     <p  th:text="${message.getText()}" ></p>
                     <p  class="card-text"><small th:text="${message.getTag()}"></small></p>
                 </div>
+                <div class="card-footer" th:if="(${message.getAuthor().getId()}) == (${#authentication.principal.id})">
+                    <a th:href="@{'/user/messages/' + ${#authentication.principal.id} + '?message=' + ${message.getId()}}">EDIT</a>
+                </div>
             </div>
 
         </div>

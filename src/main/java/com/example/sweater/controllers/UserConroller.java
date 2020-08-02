@@ -3,6 +3,7 @@ package com.example.sweater.controllers;
 import com.example.sweater.domain.Message;
 import com.example.sweater.domain.Role;
 import com.example.sweater.domain.User;
+import com.example.sweater.repos.MessageRepo;
 import com.example.sweater.repos.UserRepo;
 import com.example.sweater.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -22,6 +24,8 @@ public class UserConroller {
     private UserService userService;
     @Autowired
     private UserRepo userRepo;
+    @Autowired
+    private MessageRepo messageRepo;
     //Список юзеров
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -96,4 +100,34 @@ public class UserConroller {
         model.addAttribute("messages", user.getMessages());
         return "usermessages";
     }
+
+    @PostMapping("messages/{user}")
+    public String editMessageFromMessageList(@AuthenticationPrincipal User currentUser,
+                                             @PathVariable Long user,
+                                             @RequestParam("id") Message oldMessage,
+                                             @RequestParam("text") String newText,
+                                             @RequestParam(value = "tag", required = false) String newTag,
+                                             @RequestParam("button") String valueKnopka,
+                                             Model model) {
+
+        if (valueKnopka.equals("delete")) {
+            System.out.println("Будет удаление");
+            messageRepo.delete(oldMessage);
+            return "redirect:/user/messages/{user}";
+        }
+        if (oldMessage.getAuthor().getId().equals(currentUser.getId())) {
+            if (!StringUtils.isEmpty(newText)) {
+                oldMessage.setText(newText);
+            }
+            if (!StringUtils.isEmpty(newTag)) {
+                oldMessage.setTag(newTag);
+            }
+
+            messageRepo.save(oldMessage);
+        }
+
+        return "redirect:/user/messages/{user}";
+    }
+
+
 }
