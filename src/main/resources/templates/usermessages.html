@@ -12,28 +12,23 @@
     </div>
 
 
-    <div class="container ml-5" style="width: 30%">
+    <div class="container ml-5" style="width: 30%" th:if="${currUser}">
         <h1>Изменить сообщение: </h1>
         <br>
-        <form method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data" >
             <div><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"></div>
             <div class="form-row">
                 <div class="col-md-6 mb-3">
                     <label >Сообщение</label>
-                    <input type="text" name="text" placeholder="Введите текст" class="form-control invalidFeedback" th:classappend="${textError} ? 'is-invalid'"/>
+                    <input th:value="${message}? ${message.getText()} : null" type="text" name="text" placeholder="Введите текст" class="form-control invalidFeedback" th:classappend="${textError} ? 'is-invalid'"/>
                     <div class="invalidFeedback" th:text="${textError}">
 
                     </div>
                 </div>
                 <div class="col-md-3 mb-3">
                     <label >Тэги</label>
-                    <input type="text" name="tag" placeholder="Введите тэг" class="form-control " required/><br>
+                    <input th:value="${message}? ${message.getTag()} : null" type="text" name="tag" placeholder="Введите тэг" class="form-control " required/><br>
 
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="col-md-3 mb-3">
-                    <input type="file" name="file" placeholder="Выбери свой файл" value="null"/>
                 </div>
             </div>
             <div class="form-row my-2 my-sm-3">
@@ -57,6 +52,7 @@
                     <p  th:text="${message.getText()}" ></p>
                     <p  class="card-text"><small th:text="${message.getTag()}"></small></p>
                 </div>
+                <a th:href="@{'/user/messages/' + ${#authentication.principal.id} + '?message=' + ${message.getId()}}">EDIT</a>
             </div>
 
         </div>

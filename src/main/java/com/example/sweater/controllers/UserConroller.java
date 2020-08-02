@@ -1,5 +1,6 @@
 package com.example.sweater.controllers;
 
+import com.example.sweater.domain.Message;
 import com.example.sweater.domain.Role;
 import com.example.sweater.domain.User;
 import com.example.sweater.repos.UserRepo;
@@ -86,7 +87,12 @@ public class UserConroller {
     @GetMapping("messages/{user}")
     public String getMessageList(@AuthenticationPrincipal User currentUser,
                                  @PathVariable User user,
+                                 @RequestParam(required = false) Message message,
                                  Model model) {
+        if (message != null) {
+            model.addAttribute(message);
+        }
+        model.addAttribute("currUser", user.getId().equals(currentUser.getId()));
         model.addAttribute("messages", user.getMessages());
         return "usermessages";
     }
