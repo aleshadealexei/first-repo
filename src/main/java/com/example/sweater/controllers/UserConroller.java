@@ -78,8 +78,16 @@ public class UserConroller {
         System.out.println("New pass: " + password);
         System.out.println("New email" + email);
 
-
         userService.updateProfile(user, password, email);
         return "redirect:/user/profile/{user}";
+
+    }
+
+    @GetMapping("messages/{user}")
+    public String getMessageList(@AuthenticationPrincipal User currentUser,
+                                 @PathVariable User user,
+                                 Model model) {
+        model.addAttribute("messages", user.getMessages());
+        return "usermessages";
     }
 }

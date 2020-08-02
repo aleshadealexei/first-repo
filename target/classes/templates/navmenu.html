@@ -29,9 +29,10 @@
             <li class="nav-item" th:if="${admin} ">
                 <a class="nav-link" href="/user" >Users <span class="sr-only"></span></a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link"   >UsersTEST <span class="sr-only"></span></a>
+            <li class="nav-item" >
+                <a class="nav-link" th:href="@{'/user/messages/' + ${#authentication.principal.id}}" >My messages <span class="sr-only"></span></a>
             </li>
+
         </ul>
         <form method="post" action="/main/find" class="form-inline my-2 my-lg-0" th:if="${logined}">
             <input class="form-control mr-sm-2" aria-label="Search" name="filter" placeholder="Введите ТЭГ"/>

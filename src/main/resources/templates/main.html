@@ -50,7 +50,7 @@
         <div class=" col mb-4" th:each="message : ${messages}">
             <div class="card mb-4 ml-3">
                 <div class="card-footer">
-                    <a href="#" class="btn btn-primary" th:text="${message.author.getUsername()}"></a>
+                    <a class="btn btn-primary" th:text="${message.author.getUsername()}" th:href="@{'/user/messages/' + ${message.getAuthor().getId()}}"></a>
                 </div>
                 <img th:if="${message.getFilename()}"  alt="postImg" th:src="'/img/' + ${message.getFilename()}">
                 <div class="card-body">

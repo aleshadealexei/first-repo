@@ -13,8 +13,7 @@
 
 
     <div class="container ml-5" style="width: 30%">
-        <h1>Добавить сообщение: </h1>
-        <P th:text="'Hello, ' + ${nameUser} + '!'"></P>
+        <h1>Изменить сообщение: </h1>
         <br>
         <form method="post" enctype="multipart/form-data">
             <div><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"></div>
@@ -50,7 +49,7 @@
         <div class=" col mb-4" th:each="message : ${messages}">
             <div class="card mb-4 ml-3">
                 <div class="card-footer">
-                    <a class="btn btn-primary" th:text="${message.author.getUsername()}" th:href="@{'/user/messages/' + ${message.getAuthor().getId()}}"></a>
+                    <a href="#" class="btn btn-primary" th:text="${message.author.getUsername()}"></a>
                 </div>
                 <img th:if="${message.getFilename()}"  alt="postImg" th:src="'/img/' + ${message.getFilename()}">
                 <div class="card-body">
