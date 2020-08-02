@@ -79,7 +79,6 @@ public class UserConroller {
         User us = userRepo.findByUsername(user.getUsername());
         System.out.println(us.getId());
 
-
         System.out.println(user.getUsername());
         System.out.println(user.getPassword());
         System.out.println(user.getEmail());

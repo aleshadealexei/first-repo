@@ -10,7 +10,49 @@
     <div th:insert="~{navmenu::copy}">
 
     </div>
+    <div class="container">
+        <div class="row">
+                <h1 th:text="${user.getUsername()}"></h1>
+                <div class="container" th:if="${notYourProfile}">
+                    <a th:if="${podpisan}" class="btn btn-danger" th:href="'/user/unsubscribe/' + ${user.getId()}">Отписатся</a>
+                    <a th:if="${nepodpisan}" class="btn btn-primary" th:href="'/user/subscribe/' + ${user.getId()}">Подписатся</a>
+                </div>
+                <p th:text="${podpisan} ? 'Вы подписаны на этого пользователя' : 'Вы не подписаны на этого пользователя'">
+                </p>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">Подписки:</div>
+                            <div class="card-text">
+                                <h3>
+                                    <a th:text="${countSubscriptions}+ ' Watch more..'">Watch more..</a>
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">Подписчики:</div>
+                            <div class="card-text">
+                                <a  th:text="${countSubscribers} + ' Watch more..'">Watch more..</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
 
     <div class="container ml-5" style="width: 30%" th:if="${currUser}" enctype="multipart/form-data">
         <h1>Изменить сообщение: </h1>

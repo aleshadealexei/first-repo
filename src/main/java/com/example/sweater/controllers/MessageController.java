@@ -3,6 +3,7 @@ package com.example.sweater.controllers;
 import com.example.sweater.domain.Message;
 import com.example.sweater.domain.User;
 import com.example.sweater.repos.MessageRepo;
+import com.example.sweater.repos.UserRepo;
 import com.example.sweater.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,21 +17,33 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Set;
 
 @Controller
 public class MessageController {
     @Autowired
     private MessageRepo messageRepo;
-
+    @Autowired
+    private UserRepo userRepo;
     @GetMapping("user/messages/{user}")
     public String getMessageList(@AuthenticationPrincipal User currentUser,
                                  @PathVariable User user,
                                  @RequestParam(required = false) Message message,
                                  Model model) {
+        currentUser=userRepo.findByUsername(currentUser.getUsername());
         if (message != null) {
             model.addAttribute(message);
         }
+
+
+
+        model.addAttribute("podpisan", user.getSubscribers().contains(currentUser));
+        model.addAttribute("nepodpisan", !user.getSubscribers().contains(currentUser));
+        model.addAttribute("user", user);
+        model.addAttribute("countSubscriptions", user.getSubscriptions().size());
+        model.addAttribute("countSubscribers", user.getSubscribers().size());
         model.addAttribute("currUser", user.getId().equals(currentUser.getId()));
+        model.addAttribute("notYourProfile", !user.getId().equals(currentUser.getId()));
         model.addAttribute("messages", user.getMessages());
         return "usermessages";
     }
