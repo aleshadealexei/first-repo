@@ -3,69 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <title>Main</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 </head>
 <body>
 
-    <div th:insert="~{navmenu::copy}">
+<div th:insert="~{navmenu::copy}">
 
-    </div>
+</div>
 
 
-    <div class="container ml-5" style="width: 30%">
-        <h1>Добавить сообщение: </h1>
-        <P th:text="'Hello, ' + ${nameUser} + '!'"></P>
-        <br>
-        <form method="post" enctype="multipart/form-data">
-            <div><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"></div>
-            <div class="form-row">
-                <div class="col-md-6 mb-3">
-                    <label >Сообщение</label>
-                    <input type="text" name="text" placeholder="Введите текст" class="form-control invalidFeedback" th:classappend="${textError} ? 'is-invalid'"/>
-                    <div class="invalidFeedback" th:text="${textError}">
-
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label >Тэги</label>
-                    <input type="text" name="tag" placeholder="Введите тэг" class="form-control " required/><br>
+<div class="container ml-5" style="width: 30%">
+    <h1>Добавить сообщение: </h1>
+    <P th:text="'Hello, ' + ${nameUser} + '!'"></P>
+    <br>
+    <form method="post" enctype="multipart/form-data">
+        <div><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"></div>
+        <div class="form-row">
+            <div class="col-md-6 mb-3">
+                <label>Сообщение</label>
+                <input type="text" name="text" placeholder="Введите текст" class="form-control invalidFeedback"
+                       th:classappend="${textError} ? 'is-invalid'"/>
+                <div class="invalidFeedback" th:text="${textError}">
 
                 </div>
             </div>
-            <div class="form-row">
-                <div class="col-md-3 mb-3">
-                    <input type="file" name="file" placeholder="Выбери свой файл" value="null"/>
-                </div>
+            <div class="col-md-3 mb-3">
+                <label>Тэги</label>
+                <input type="text" name="tag" placeholder="Введите тэг" class="form-control " required/><br>
+
             </div>
-            <div class="form-row my-2 my-sm-3">
-                <button type="submit" class="btn btn-primary ml-5">Добавить сообщение</button>
+        </div>
+        <div class="form-row">
+            <div class="col-md-3 mb-3">
+                <input type="file" name="file" placeholder="Выбери свой файл" value="null"/>
             </div>
-
-        </form>
-    </div>
-
-
-    <div class="row row-cols-1 row-cols-md-3 mt-5">
-
-        <div class=" col mb-4" th:each="message : ${messages}">
-            <div class="card mb-4 ml-3">
-                <div class="card-footer">
-                    <a href="#" class="btn btn-primary" th:text="${message.author.getUsername()}"></a>
-                </div>
-                <img th:if="${message.getFilename()}"  alt="postImg" th:src="'/img/' + ${message.getFilename()}">
-                <div class="card-body">
-
-                    <p  th:text="${message.getText()}" ></p>
-                    <p  class="card-text"><small th:text="${message.getTag()}"></small></p>
-                </div>
-            </div>
-
+        </div>
+        <div class="form-row my-2 my-sm-3">
+            <button type="submit" class="btn btn-primary ml-5">Добавить сообщение</button>
         </div>
 
+    </form>
+</div>
+
+<nav aria-label="Page navigation example" class="container">
+    <ul class="pagination">
+        <li class="page-item" th:if="${page.hasPrevious()}">
+            <a class="page-link" th:href="@{/main(page=${page.number-1},size=3)}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+                <span class="sr-only">Previous</span>
+            </a>
+        </li>
+        <li th:each="i: ${#numbers.sequence(0, page.totalPages - 1)}" class="page-item">
+                <span th:if="${page.number == i}" class="page-link active">
+                        [[${i}+1]]
+                </span>
+
+            <span th:unless="${page.number == i}">
+                 <a class="page-link" th:href="@{/main(page=${i},size=3)}">[[${i}+1]]</a>
+            </span>
+        </li>
+        <li class="page-item" th:if="${page.hasNext()}">
+            <a class="page-link" th:href="@{/main(page=${page.number+1},size=3)}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+                <span class="sr-only">Next</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+<div class="row row-cols-1 row-cols-md-3 mt-5">
+
+    <div class=" col mb-4" th:each="message : ${page.content}">
+
+        <div class="card mb-4 ml-3">
+            <div class="card-footer">
+                <a class="btn btn-primary" th:text="${message.author.getUsername()}"
+                   th:href="@{'/user/messages/' + ${message.getAuthor().getId()}}"></a>
+            </div>
+            <img th:if="${message.getFilename()}" alt="postImg" th:src="'/img/' + ${message.getFilename()}">
+            <div class="card-body">
+
+                <p th:text="${message.getText()}"></p>
+                <p class="card-text"><small th:text="${message.getTag()}"></small></p>
+
+            </div>
+
+            <div class="card-footer" >
+                <div class="row">
+                    <a href="#" class="btn btn-primary">♥</a>
+                </div>
+                <div class="row" style="margin-top: 2%">
+                    <a class="btn btn-warning" th:if="(${message.getAuthor().getId()}) == (${#authentication.principal.id})"
+                       th:href="@{'/user/messages/' + ${#authentication.principal.id} + '?message=' + ${message.getId()}}">
+                        EDIT
+                    </a>
+                </div>
+
+            </div>
+        </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+</div>
+
+
+<!-- Footer -->
+<footer class="page-footer font-small teal pt-4" style="background-color: cadetblue">
+
+    <!-- Footer Text -->
+    <div class="container-fluid text-center text-md-left">
+
+        <!-- Grid row -->
+        <div class="row">
+
+            <!-- Grid column -->
+            <div class="col-md-6 mt-md-0 mt-3">
+
+                <!-- Content -->
+                <h5 class="text-uppercase font-weight-bold">Предисловие</h5>
+                <p>Этот сайт разработан на основе видеоуроков youtube канала "letsCode". Огромное спасибо этому человеку
+                за его нелегкий труд. Его видеоуроки - это лучшее, что случалось со мной за последнее время.
+                Если бы не он, я бы никогда не смог освои java и spring в той степени, в которой знаю сейчас.</p>
+
+            </div>
+            <!-- Grid column -->
+
+            <hr class="clearfix w-100 d-md-none pb-3">
+
+            <!-- Grid column -->
+            <div class="col-md-6 mb-md-0 mb-3">
+
+                <!-- Content -->
+                <h5 class="text-uppercase font-weight-bold">Ссылка на автора:</h5>
+                <p>Думаю, здесь точно нужно оставить ссылку на его канал:</p>
+                <div class="container">
+                    <a class="btn btn-primary" href="https://www.youtube.com/channel/UC1g3kT0ZcSXt4_ZyJOshKJQ">YouTube channel "letsCode"</a>
+                </div>
+                <p>
+
+                    А так же, на группу в социальной сети "ВКонтакте"
+                <div class="container">
+                    <a class="btn btn-primary" href="https://vk.com/letscodedru">Группа ВК"letsCode"</a>
+                </div>
+                </p>
+            </div>
+            <!-- Grid column -->
+
+        </div>
+        <!-- Grid row -->
+
+    </div>
+    <!-- Footer Text -->
+
+    <!-- Copyright -->
+    <div class="footer-copyright text-center py-3">© 2020 Copyright:
+        <a href="https://mdbootstrap.com/"> MDBootstrap.com</a>
+    </div>
+    <!-- Copyright -->
+
+</footer>
+<!-- Footer -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
 </body>
 </html>

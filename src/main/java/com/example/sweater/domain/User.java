@@ -7,6 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity(name = "userdata")
@@ -26,6 +27,31 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Message> messages;
+
+    public Set<User> getSubscribers() {
+        return subscribers;
+    }
+
+    public void setSubscribers(Set<User> subscribers) {
+        this.subscribers = subscribers;
+    }
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_podpiski",
+            joinColumns = { @JoinColumn(name = "channel_id  ") },
+            inverseJoinColumns = {@JoinColumn(name = "sub_id")}
+    )
+    private Set<User> subscribers = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_podpiski",
+            joinColumns = { @JoinColumn(name = "sub_id ") },
+            inverseJoinColumns = {@JoinColumn(name = "channel_id")}
+            )
+    private Set<User> subscriptions = new HashSet<>();
+
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "userId"))
     @Enumerated(EnumType.STRING)
@@ -36,9 +62,12 @@ public class User implements UserDetails {
     private String email;
 
     private String activationCode;
+
     public User() {
 
     }
+
+
 
     public User(Long id, String username, String password, boolean activated, Set<Role> roles) {
         this.id = id;
@@ -118,6 +147,14 @@ public class User implements UserDetails {
 
     public void setActivationCode(String activationCode) {
         this.activationCode = activationCode;
+    }
+
+    public Set<User> getSubscriptions() {
+        return subscriptions;
+    }
+
+    public void setSubscriptions(Set<User> subscriptions) {
+        this.subscriptions = subscriptions;
     }
 
     @Override

@@ -1,7 +1,9 @@
 package com.example.sweater.controllers;
 
+import com.example.sweater.domain.Message;
 import com.example.sweater.domain.Role;
 import com.example.sweater.domain.User;
+import com.example.sweater.repos.MessageRepo;
 import com.example.sweater.repos.UserRepo;
 import com.example.sweater.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +11,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -17,10 +21,14 @@ import java.util.Map;
 @Controller
 @RequestMapping("/user")
 public class UserConroller {
+
+
     @Autowired
     private UserService userService;
     @Autowired
     private UserRepo userRepo;
+    @Autowired
+    private MessageRepo messageRepo;
     //Список юзеров
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -71,15 +79,18 @@ public class UserConroller {
         User us = userRepo.findByUsername(user.getUsername());
         System.out.println(us.getId());
 
-
         System.out.println(user.getUsername());
         System.out.println(user.getPassword());
         System.out.println(user.getEmail());
         System.out.println("New pass: " + password);
         System.out.println("New email" + email);
 
-
         userService.updateProfile(user, password, email);
         return "redirect:/user/profile/{user}";
+
     }
+
+
+
+
 }
