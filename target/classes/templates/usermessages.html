@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Main</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+</head>
+<body>
+
+    <div th:insert="~{navmenu::copy}">
+
+    </div>
+    <div class="container">
+        <div class="row">
+                <h1 th:text="${user.getUsername()}"></h1>
+                <div class="container" th:if="${notYourProfile}">
+                    <a th:if="${podpisan}" class="btn btn-danger" th:href="'/user/unsubscribe/' + ${user.getId()}">Отписатся</a>
+                    <a th:if="${nepodpisan}" class="btn btn-primary" th:href="'/user/subscribe/' + ${user.getId()}">Подписатся</a>
+                </div>
+                <p th:text="${podpisan} ? 'Вы подписаны на этого пользователя' : 'Вы не подписаны на этого пользователя'">
+                </p>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">Подписки:</div>
+                            <div class="card-text">
+                                <h3>
+                                    <a th:href="@{'/user/' + ${user.getId()} + '/subscription'}"  th:text="${countSubscriptions}"></a>
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">Подписчики:</div>
+                            <div class="card-text">
+                                <a th:href="@{'/user/' + ${user.getId()} + '/subscribers'}" th:text="${countSubscribers}"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="container ml-5" style="width: 30%" th:if="${currUser}" enctype="multipart/form-data">
+        <h1>Изменить сообщение: </h1>
+        <br>
+        <form method="post" th:action="@{'/user/messages/' + ${#authentication.principal.id}}" enctype="multipart/form-data">
+            <input th:value="${message}? ${message.getId()} : null" name="id" hidden/>
+            <div><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"></div>
+            <div class="form-row">
+                <div class="col-md-6 mb-3">
+                    <label >Сообщение</label>
+                    <input th:value="${message}? ${message.getText()} : null" type="text" name="text" placeholder="Введите текст" class="form-control invalidFeedback" th:classappend="${textError} ? 'is-invalid'"/>
+                    <div class="invalidFeedback" th:text="${textError}">
+
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label >Тэги</label>
+                    <input th:value="${message}? ${message.getTag()} : null" type="text" name="tag" placeholder="Введите тэг" class="form-control "/><br>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <input type="file" name="file" placeholder="Выбери свой файл" />
+                </div>
+            </div>
+            <div class="form-row my-2 my-sm-3">
+                <button type="submit" class="btn btn-primary ml-5" name="button" value="edit">Отредачить сообщение</button>
+            </div>
+            <div class="form-row my-2 my-sm-3 ">
+                <button type="submit" class="btn btn-danger ml-5" name="button" value="delete">Удалить сообщение</button>
+            </div>
+
+        </form>
+    </div>
+
+
+    <div class="row row-cols-1 row-cols-md-3 mt-5">
+
+        <div class=" col mb-4" th:each="message : ${messages}">
+            <div class="card mb-4 ml-3">
+                <div class="card-footer">
+                    <a href="#" class="btn btn-primary" th:text="${message.author.getUsername()}"></a>
+                </div>
+                <img th:if="${message.getFilename()}"  alt="postImg" th:src="'/img/' + ${message.getFilename()}">
+                <div class="card-body">
+
+                    <p  th:text="${message.getText()}" ></p>
+                    <p  class="card-text"><small th:text="${message.getTag()}"></small></p>
+
+                </div>
+                <div class="card-footer">
+                    <div class="container row">
+                        <div class="col">
+                            <a th:href="'/like/' + ${message.getId()}" class="btn " th:classappend="${message.getLikesFrom().contains(user)}
+                                ? ' btn-success' : ' btn-secondary'">♥</a>
+                            <a  style="margin-left: 3%; margin-top: 1%" th:text="${message.getCountLikes()}">
+                            </a>
+                        </div>
+
+                        <div class="col">
+                            <a th:href="@{'/user/messages/' + ${#authentication.principal.id} + '?message=' + ${message.getId()}}">EDIT</a>
+                        </div>
+
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+</body>
+</html>
