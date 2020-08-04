@@ -1,10 +1,11 @@
 package com.example.sweater.domain;
 
 import org.hibernate.validator.constraints.Length;
-import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Message {
@@ -24,8 +25,29 @@ public class Message {
 
     private String filename;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "message_likes",
+            joinColumns = { @JoinColumn(name = "message_id") },
+            inverseJoinColumns = { @JoinColumn (name = "user_id")})
+    private Set<User> likesFrom = new HashSet<>();
+
+
+
+
     public Message() {
 
+    }
+
+    public Set<User> getLikesFrom() {
+        return likesFrom;
+    }
+
+    public int getCountLikes() {
+        return likesFrom.size();
+    }
+
+    public void setLikesFrom(Set<User> messageLikesFromUsers) {
+        this.likesFrom = messageLikesFromUsers;
     }
 
     public Message(String text, String tag) {

@@ -28,7 +28,7 @@
                             <div class="card-title">Подписки:</div>
                             <div class="card-text">
                                 <h3>
-                                    <a th:text="${countSubscriptions}+ ' Watch more..'">Watch more..</a>
+                                    <a th:href="@{'/user/' + ${user.getId()} + '/subscription'}"  th:text="${countSubscriptions}"></a>
                                 </h3>
                             </div>
                         </div>
@@ -44,7 +44,7 @@
                         <div class="card-body">
                             <div class="card-title">Подписчики:</div>
                             <div class="card-text">
-                                <a  th:text="${countSubscribers} + ' Watch more..'">Watch more..</a>
+                                <a th:href="@{'/user/' + ${user.getId()} + '/subscribers'}" th:text="${countSubscribers}"></a>
                             </div>
                         </div>
                     </div>
@@ -102,7 +102,21 @@
 
                 </div>
                 <div class="card-footer">
-                    <a th:href="@{'/user/messages/' + ${#authentication.principal.id} + '?message=' + ${message.getId()}}">EDIT</a>
+                    <div class="container row">
+                        <div class="col">
+                            <a th:href="'/like/' + ${message.getId()}" class="btn " th:classappend="${message.getLikesFrom().contains(user)}
+                                ? ' btn-success' : ' btn-secondary'">♥</a>
+                            <a  style="margin-left: 3%; margin-top: 1%" th:text="${message.getCountLikes()}">
+                            </a>
+                        </div>
+
+                        <div class="col">
+                            <a th:href="@{'/user/messages/' + ${#authentication.principal.id} + '?message=' + ${message.getId()}}">EDIT</a>
+                        </div>
+
+
+                    </div>
+
                 </div>
             </div>
 

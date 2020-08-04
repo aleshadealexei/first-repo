@@ -39,8 +39,8 @@ public class User implements UserDetails {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_podpiski",
-            joinColumns = { @JoinColumn(name = "channel_id  ") },
-            inverseJoinColumns = {@JoinColumn(name = "sub_id")}
+            joinColumns = { @JoinColumn(name = "channel_id") },
+            inverseJoinColumns = {@JoinColumn(name = "sub_id") }
     )
     private Set<User> subscribers = new HashSet<>();
 
@@ -51,6 +51,8 @@ public class User implements UserDetails {
             inverseJoinColumns = {@JoinColumn(name = "channel_id")}
             )
     private Set<User> subscriptions = new HashSet<>();
+
+
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "userId"))

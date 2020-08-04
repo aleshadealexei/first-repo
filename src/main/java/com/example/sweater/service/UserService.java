@@ -123,9 +123,7 @@ public class UserService implements UserDetailsService {
     }
 
     public void unsubscribe(User currentUser, User user) {
-            User us1 = currentUser;
             user.getSubscribers().remove(currentUser);
-            us1.getSubscriptions().remove(user);
             userRepo.save(user);
 
     }

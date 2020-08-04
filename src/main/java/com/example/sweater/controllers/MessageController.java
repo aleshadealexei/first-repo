@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Set;
+import java.util.Comparator;
 
 @Controller
 public class MessageController {
@@ -34,7 +34,6 @@ public class MessageController {
         if (message != null) {
             model.addAttribute(message);
         }
-
 
 
         model.addAttribute("podpisan", user.getSubscribers().contains(currentUser));
@@ -82,4 +81,15 @@ public class MessageController {
         return "redirect:/user/messages/{user}";
     }
 
+    @GetMapping("/user/{user}/{mode}")
+    public String getSub(Model model, @PathVariable User user, @PathVariable String mode) {
+        model.addAttribute("mode", mode);
+        model.addAttribute("user", user);
+        if (mode.equals("subscribers")) {
+            model.addAttribute("users", user.getSubscribers());
+        } else {
+            model.addAttribute("users", user.getSubscriptions());
+        }
+        return "subslist";
+    }
 }

@@ -15,7 +15,7 @@
 
 <div class="container ml-5" style="width: 30%">
     <h1>Добавить сообщение: </h1>
-    <P th:text="'Hello, ' + ${nameUser} + '!'"></P>
+    <P th:text="'Hello, ' + ${user.getUsername()} + '!'"></P>
     <br>
     <form method="post" enctype="multipart/form-data">
         <div><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"></div>
@@ -54,7 +54,7 @@
                 <span class="sr-only">Previous</span>
             </a>
         </li>
-        <li th:each="i: ${#numbers.sequence(0, page.totalPages - 1)}" class="page-item">
+        <li th:each="i: ${#numbers.sequence(0, page.totalPages - 1)}" class="page-item" th:classappend="${page.number == i} ? ' active'">
                 <span th:if="${page.number == i}" class="page-link active">
                         [[${i}+1]]
                 </span>
@@ -90,8 +90,12 @@
             </div>
 
             <div class="card-footer" >
-                <div class="row">
-                    <a href="#" class="btn btn-primary">♥</a>
+                <div class="container row">
+                    <a th:href="'/like/' + ${message.getId()}" class="btn " th:classappend="${message.getLikesFrom().contains(user)}
+                    ? ' btn-success' : ' btn-secondary'">♥</a>
+                    <a th:href="'/like/' + ${message.getId()} + '/likesfrom/'" style="margin-left: 3%; margin-top: 1%" th:text="${message.getCountLikes()}">
+
+                    </a>
                 </div>
                 <div class="row" style="margin-top: 2%">
                     <a class="btn btn-warning" th:if="(${message.getAuthor().getId()}) == (${#authentication.principal.id})"

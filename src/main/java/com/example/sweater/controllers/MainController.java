@@ -4,6 +4,7 @@ import com.example.sweater.domain.Message;
 import com.example.sweater.domain.Role;
 import com.example.sweater.domain.User;
 import com.example.sweater.repos.MessageRepo;
+import com.example.sweater.repos.UserRepo;
 import com.example.sweater.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -54,14 +55,19 @@ public class MainController {
             return "login";
         }
     }
+
+    @Autowired
+    private UserRepo userRepo;
     //заход на главную
     @GetMapping("/main")
     public String main(Model model, @AuthenticationPrincipal User user,
                        @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC, size = 3) Pageable pageable) {
+
+        User us1 = userRepo.findByUsername(user.getUsername());
         Page<Message> messagePage = messageRepo.findAll(pageable);
         Iterable<Message> messages = messageRepo.findAllByOrderByIdDesc();
         model.addAttribute("page", messagePage);
-        model.addAttribute("nameUser", user.getUsername());
+        model.addAttribute("user", us1);
         model.addAttribute("admin", user.getRoles().contains(Role.ADMIN));
         model.addAttribute("messages", messages);
         model.addAttribute("logined", true);
@@ -73,7 +79,6 @@ public class MainController {
                       @Valid Message message,
                       BindingResult bindingResult,
                       Model model,
-
                       @RequestParam(name="file", required = false, defaultValue = "null") MultipartFile file
                       ) throws IOException {
 
